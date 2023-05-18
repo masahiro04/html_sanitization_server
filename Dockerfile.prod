@@ -1,0 +1,23 @@
+FROM rust:latest as build
+
+WORKDIR /usr/src/myapp
+
+COPY ./Cargo.lock ./Cargo.lock
+COPY ./Cargo.toml ./Cargo.toml
+
+COPY ./src ./src
+
+RUN cargo build --release
+
+FROM debian:buster-slim
+
+RUN useradd myapp
+WORKDIR /home/myapp/bin/
+COPY --from=build /usr/src/myapp/target/release/myapp .
+RUN chown -R myapp:myapp ./
+
+USER myapp
+
+EXPOSE 8080
+
+CMD ["./myapp"]
