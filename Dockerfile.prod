@@ -1,23 +1,22 @@
 FROM rust:latest as build
 
-WORKDIR /usr/src/myapp
+WORKDIR /usr/src/html_sanitization_server
 
 COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml ./Cargo.toml
-
 COPY ./src ./src
 
 RUN cargo build --release
 
 FROM debian:buster-slim
 
-RUN useradd myapp
-WORKDIR /home/myapp/bin/
-COPY --from=build /usr/src/myapp/target/release/myapp .
-RUN chown -R myapp:myapp ./
+RUN useradd html_sanitization_server
+WORKDIR /home/html_sanitization_server/bin/
+COPY --from=build /usr/src/html_sanitization_server/target/release/html_sanitization_server .
+RUN chown -R html_sanitization_server:html_sanitization_server ./
 
-USER myapp
+USER html_sanitization_server
 
 EXPOSE 8080
 
-CMD ["./myapp"]
+CMD ["./html_sanitization_server"]
